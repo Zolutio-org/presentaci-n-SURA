@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SureTripCar · Propuesta para SURA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ==========================================================================
+   Tokens — copiados de arriero-crm-tester/DESIGN.md
+   Azul corporativo BMW + chrome navy + dual-face Inter/JetBrains Mono.
+   REGLA: todo valor que cambia va en JetBrains Mono. Uppercase = mono.
+   Nada externo: ni fuentes de Google ni CDNs. Abre con doble clic y funciona.
+   ========================================================================== */
+@font-face{font-family:Inter;src:url('fonts/Inter.ttf') format('truetype');font-weight:100 900;font-display:swap}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono.ttf') format('truetype');font-weight:100 800;font-display:swap}
+
+:root{
+  --primary:#1c69d4; --primary-active:#0653b6; --on-primary:#fff;
+  --info:#4e86f5; --inverse-primary:#b5c4ff;
+  --canvas:#f8f9ff; --card:#fff; --soft:#f7f9ff;
+  --low:#eff4ff; --mid:#e5eeff; --high:#dce9ff; --highest:#d3e4fe;
+  --chrome:#0d1f3c; --chrome-elevated:#16294d; --inverse-canvas:#0b1c30;
+  --on-dark:#eaf1ff; --on-dark-soft:#8fa3bf;
+  --ink:#0b1c30; --body:#434654; --muted:#64748b; --muted-soft:#9aa4b2;
+  --hairline:#e6e6e6; --hairline-strong:#d1d5db; --hairline-blue:#c3c5d7;
+  --success:#22c55e; --warning:#f59e0b; --drowsy:#f97316; --critical:#ef4444; --error:#dc2626;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --ui:Inter,system-ui,-apple-system,sans-serif;
+  --shadow-float:0 4px 20px rgba(13,31,60,.08);
+  --shadow-overlay:0 12px 40px rgba(13,31,60,.15);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#050d1c}
+body{font-family:var(--ui);color:var(--on-dark);-webkit-font-smoothing:antialiased}
+
+/* Escenario fijo 1280x720 escalado al viewport: en cualquier proyector se ve igual. */
+#stage{position:fixed;inset:0;display:grid;place-items:center}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--chrome);overflow:hidden}
+
+.slide{position:absolute;inset:0;padding:64px 80px;display:none;flex-direction:column;
+  background:
+    radial-gradient(1200px 600px at 88% -10%, rgba(28,105,212,.28), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(78,134,245,.14), transparent 60%),
+    var(--chrome);
+}
+.slide.active{display:flex;animation:in .45s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.slide.center{justify-content:center}
+
+/* Tipografía */
+.eyebrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--info)}
+h1{font-size:64px;line-height:1.05;font-weight:700;letter-spacing:-.02em}
+h2{font-size:44px;line-height:1.12;font-weight:700;letter-spacing:-.015em;max-width:24ch}
+h3{font-size:20px;font-weight:600;color:var(--on-dark)}
+p{font-size:19px;line-height:1.55;color:var(--on-dark-soft);max-width:62ch}
+strong{color:var(--on-dark);font-weight:700}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--on-dark)}
+.rule{width:64px;height:3px;background:var(--primary);border-radius:2px;margin:20px 0 26px}
+
+/* Chips y cards */
+.chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 12px;border-radius:6px}
+.chip .dot{width:6px;height:6px;border-radius:50%}
+.chip.ok{background:rgba(34,197,94,.20);color:#7fe0aa}.chip.ok .dot{background:var(--success)}
+.chip.warn{background:rgba(245,158,11,.20);color:#ffd08a}.chip.warn .dot{background:var(--warning)}
+.chip.bad{background:rgba(239,68,68,.20);color:#ff9aa5}.chip.bad .dot{background:var(--critical)}
+
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+
+.kpi{background:rgba(255,255,255,.04);border:1px solid rgba(234,241,255,.12);
+  border-radius:8px;padding:22px 24px;min-width:180px}
+.kpi .label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--on-dark-soft)}
+.kpi .value{font-family:var(--mono);font-size:40px;font-weight:700;line-height:1.1;margin-top:10px;
+  letter-spacing:-.02em}
+.kpi .sub{font-size:13px;color:var(--on-dark-soft);margin-top:6px}
+.kpi.crit{border-left:4px solid var(--critical)}
+.kpi.warn{border-left:4px solid var(--warning)}
+.kpi.brand{border-left:4px solid var(--primary)}
+.kpi.good{border-left:4px solid var(--success)}
+
+.card{background:var(--card);border:1px solid var(--hairline-strong);border-radius:8px;padding:20px}
+.card h3{color:var(--ink);font-size:17px}
+.card p{color:var(--body);font-size:14.5px;line-height:1.5;margin-top:6px;max-width:none}
+.card .tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--primary)}
+.icon{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;margin-bottom:14px;
+  background:rgba(28,105,212,.12);color:var(--primary);font-family:var(--mono);font-weight:700}
+
+/* Tabla (misma spec que el CRM) */
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden}
+thead th{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 24px;background:var(--canvas);
+  border-bottom:1px solid var(--hairline-strong)}
+tbody td{font-size:15px;color:var(--ink);padding:13px 24px;border-bottom:1px solid var(--hairline)}
+tbody tr:last-child td{border-bottom:none}
+td.v{font-family:var(--mono);font-variant-numeric:tabular-nums}
+td.crit{color:var(--critical);font-weight:700}
+td.warn{color:#b45309;font-weight:700}
+td.good{color:#15803d;font-weight:700}
+.mini{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* Marco para capturas */
+.shot{border-radius:10px;overflow:hidden;border:1px solid rgba(234,241,255,.16);
+  box-shadow:var(--shadow-overlay);background:#0a1830}
+.shot img{display:block;width:100%;height:auto}
+.shot.hero img{max-height:430px;width:auto;margin:0 auto}
+.caption{font-family:var(--mono);font-size:12px;color:var(--on-dark-soft);margin-top:14px;
+  display:flex;gap:10px;align-items:center}
+.phone{width:238px;border-radius:26px;overflow:hidden;border:1px solid rgba(234,241,255,.22);
+  box-shadow:var(--shadow-overlay);background:#0a1830;flex:0 0 auto}
+.phone img{display:block;width:100%;height:auto}
+.two{display:grid;grid-template-columns:238px 1fr;gap:44px;align-items:center}
+
+/* Diagrama de coalescencia */
+.waves{display:flex;align-items:flex-end;gap:14px;margin-top:8px}
+.wave{flex:1;text-align:center}
+.bar{height:8px;border-radius:4px;background:rgba(143,163,191,.28);margin-bottom:10px}
+.wave.dead .bar{background:rgba(143,163,191,.16)}
+.wave.alive .bar{background:var(--primary);height:8px;box-shadow:0 0 0 3px rgba(28,105,212,.18)}
+.wave .lbl{font-family:var(--mono);font-size:12px;color:var(--on-dark-soft)}
+.wave.alive .lbl{color:var(--inverse-primary);font-weight:700}
+.arrow{display:flex;align-items:center;gap:14px;margin-top:22px}
+.arrow .line{flex:1;height:1px;background:rgba(143,163,191,.3)}
+.arrow .box{background:rgba(28,105,212,.14);border:1px solid rgba(28,105,212,.4);
+  border-radius:8px;padding:12px 18px;font-family:var(--mono);font-size:13px;color:var(--inverse-primary)}
+
+.foot{position:absolute;left:80px;right:80px;bottom:26px;display:flex;align-items:center;
+  justify-content:space-between;font-family:var(--mono);font-size:11px;color:rgba(143,163,191,.75)}
+.progress{position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(143,163,191,.15)}
+.progress i{display:block;height:100%;width:0;background:var(--primary);transition:width .35s var(--ease)}
+.hint{position:fixed;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;
+  color:rgba(143,163,191,.55)}
+.muted{color:var(--on-dark-soft)}
+.tiny{font-size:13px;color:var(--on-dark-soft)}
+.big-quote{font-size:40px;line-height:1.25;font-weight:700;max-width:26ch;letter-spacing:-.01em}
+.hl{color:var(--inverse-primary)}
+
+/* Impresión: una página por slide, apaisado, para mandar el PDF por correo. */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;background:#fff}
+  #stage{position:static;display:block}
+  #deck{transform:none!important;width:1280px;height:auto}
+  .slide{display:flex!important;position:relative;inset:auto;width:1280px;height:720px;
+    page-break-after:always;break-after:page}
+  .hint,.progress{display:none}
+}
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck">
+
+  <!-- 1 · PORTADA -->
+  <section class="slide center">
+    <div class="eyebrow">Propuesta para SURA · Seguros de flotas</div>
+    <h1 style="margin-top:18px">SureTripCar</h1>
+    <p style="margin-top:14px;font-size:22px;color:var(--inverse-primary)">
+      Seguridad en cada kilómetro.
+    </p>
+    <div class="rule"></div>
+    <p>La plataforma que ya opera en cabina: <strong>fatiga del conductor</strong> y
+      <strong>documentos que vencen</strong>, en el mismo lugar donde se toman las decisiones.</p>
+    <div class="foot"><span>TRADEL S.A.S. · ZOLUTIO TECH</span><span>15 · 10 · 2026</span></div>
+  </section>
+
+  <!-- 2 · GANCHO -->
+  <section class="slide center">
+    <div class="eyebrow">La pregunta incómoda</div>
+    <h2 style="margin-top:18px;max-width:30ch">
+      ¿Cuántos de los vehículos que SURA asegura hoy van a circular
+      <span class="hl">mañana con el SOAT o la tecnomecánica vencidos</span>?
+    </h2>
+    <div class="rule"></div>
+    <div class="big-quote">Si no lo sabe, <span class="hl">ese siniestro ya está vendido.</span></div>
+  </section>
+
+  <!-- 3 · EL COSTO -->
+  <section class="slide">
+    <div class="eyebrow">El costo de circular sin tecnomecánica</div>
+    <div class="rule"></div>
+    <div class="grid g4">
+      <div class="kpi crit"><div class="label">Multa C35</div>
+        <div class="value" data-count="875452" data-prefix="$" data-sep=".">0</div>
+        <div class="sub">15 salarios mínimos diarios</div></div>
+      <div class="kpi crit"><div class="label">Inmovilización</div>
+        <div class="value">Inmediata</div><div class="sub">más grúa y patios</div></div>
+      <div class="kpi crit"><div class="label">RUNT</div>
+        <div class="value">Bloqueado</div><div class="sub">sin traspasos ni trámites</div></div>
+      <div class="kpi warn"><div class="label">SOAT vencido</div>
+        <div class="value">Sin cobertura</div><div class="sub">el siniestro se pelea</div></div>
+    </div>
+    <p style="margin-top:34px">La flota se detiene, el cliente se enoja y el reclamo llega
+      <strong>después</strong> de que el vehículo ya salió a la vía.</p>
+  </section>
+
+  <!-- 4 · EL SEGUNDO COSTO -->
+  <section class="slide center">
+    <div class="eyebrow">El segundo costo: comercial</div>
+    <div class="big-quote" style="margin-top:18px">
+      El día que a su cliente se le vence el SOAT es <span class="hl">el único día del año en que
+      ese cliente va a atenderles el teléfono.</span>
+    </div>
+    <div class="rule"></div>
+    <p>Fuera de ese día, SURA no tiene un motivo para llamar. Y el que llama con el dato
+      —<em>“a tu flota le vencen 12 SOAT este mes”</em>— no es el que vende GPS:
+      es el que ya tiene la relación.</p>
+  </section>
+
+  <!-- 5 · LA SOLUCIÓN -->
+  <section class="slide">
+    <div class="eyebrow">La solución</div>
+    <div class="rule"></div>
+    <div class="grid g3">
+      <div class="card"><div class="icon">01</div>
+        <h3>App del conductor</h3>
+        <p>Fatiga y distracción, en el celular de la cabina. Funciona sin internet y sin GPS.</p></div>
+      <div class="card"><div class="icon">02</div>
+        <h3>CRM de la flota</h3>
+        <p>El despachador ve quién está en riesgo y qué documento vence: rojo y ámbar, sin buscar.</p></div>
+      <div class="card"><div class="icon">03</div>
+        <h3>Vigencias</h3>
+        <p>La fecha del documento vigilada y avisada a tiempo, al dueño, al conductor y a SURA.</p></div>
+    </div>
+    <p style="margin-top:30px">Todo multiempresa: cada flota ve lo suyo y nada más.</p>
+  </section>
+
+  <!-- 6 · EL PRODUCTO (CRM real) -->
+  <section class="slide">
+    <div class="eyebrow">El producto, funcionando hoy</div>
+    <div class="rule"></div>
+    <div class="shot hero"><img src="img/crm-vigencias.png" alt="CRM de flota: vigencias"></div>
+    <div class="caption"><span class="chip bad"><span class="dot"></span>Vencida</span>
+      <span class="chip warn"><span class="dot"></span>Por vencer</span>
+      <span>Datos reales del entorno de demostración · 3 documentos · 1 multa evitada</span></div>
+  </section>
+
+  <!-- 7 · EN EL BOLSILLO DEL CONDUCTOR -->
+  <section class="slide">
+    <div class="eyebrow">El canal que no depende del correo</div>
+    <div class="rule"></div>
+    <div class="two">
+      <div class="phone"><img src="img/celular-documentos.png" alt="App del conductor: mis documentos"></div>
+      <div>
+        <h2 style="font-size:34px;max-width:22ch">El conductor ve su documento
+          <span class="hl">todos los días, no cuando vence.</span></h2>
+        <p style="margin-top:20px">Cuenta regresiva en el celular y <strong>aviso local a las 7:00</strong>
+          una semana antes y el día del vencimiento. Una sola vez por documento: no es un sistema que
+          molesta, es uno al que le creen.</p>
+        <p style="margin-top:16px" class="tiny">Hoy es el canal garantizado, porque no depende de que el
+          conductor abra un correo. El envío al dueño y a SURA corre por el servidor.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PRIVACIDAD -->
+  <section class="slide center">
+    <div class="eyebrow">Lo que nos hace defendibles</div>
+    <h2 style="margin-top:18px">
+      El video <span class="hl">nunca sale del teléfono.</span>
+    </h2>
+    <div class="rule"></div>
+    <p>El reconocimiento corre <strong>en el dispositivo</strong>: la cámara se analiza localmente y
+      lo único que sube es el estado —normal, somnoliento— con la posición.
+      No hay nube con caras de sus asegurados, y no hay nada que se pueda filtrar.</p>
+  </section>
+
+  <!-- 7 · EL PRINCIPIO -->
+  <section class="slide center">
+    <div class="eyebrow">El principio que nos protege a los dos</div>
+    <h1 style="margin-top:16px;max-width:26ch">
+      Recordamos, <span class="hl">no certificamos.</span>
+    </h1>
+    <div class="rule"></div>
+    <p>La fecha de vencimiento es <strong>la del documento</strong> —la póliza, el CDR, la licencia—
+      o la que devuelva RUNT. El sistema la guarda y avisa; nunca la deriva de una regla.
+      Ustedes no quedan expuestos a que un sistema les diga cuándo vence una norma.</p>
+  </section>
+
+  <!-- 8 · CÓMO FUNCIONA -->
+  <section class="slide">
+    <div class="eyebrow">Cómo funciona</div>
+    <div class="rule"></div>
+    <h3 style="font-size:24px">Cargamos un SOAT que vence en 5 días. Seis umbrales ya pasaron.</h3>
+    <div class="waves" style="margin-top:26px">
+      <div class="wave dead"><div class="bar"></div><div class="lbl">30d</div></div>
+      <div class="wave dead"><div class="bar"></div><div class="lbl">15d</div></div>
+      <div class="wave dead"><div class="bar"></div><div class="lbl">7d</div></div>
+      <div class="wave dead"><div class="bar"></div><div class="lbl">3d</div></div>
+      <div class="wave alive"><div class="bar"></div><div class="lbl">1d</div></div>
+      <div class="wave dead"><div class="bar"></div><div class="lbl">0d</div></div>
+    </div>
+    <div class="arrow">
+      <div class="line"></div>
+      <div class="box">1 mensaje · no 6</div>
+      <div class="line"></div>
+    </div>
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card"><span class="tag">Al dueño</span><p>Por WhatsApp o correo, con la fecha exacta.</p></div>
+      <div class="card"><span class="tag">Al conductor</span><p>En la app, con cuenta regresiva y aviso local.</p></div>
+      <div class="card"><span class="tag">A SURA</span><p>Sólo si la empresa autorizó (Ley 1581).</p></div>
+    </div>
+    <p class="tiny" style="margin-top:22px">Y queda el rastro: si alguien corrige la fecha, los
+      avisos anteriores se <strong>cancelan</strong> — no se borran.</p>
+    <div class="foot"><span>SCAN DIARIO · IDEMPOTENTE</span><span>correrlo dos veces no duplica nada</span></div>
+  </section>
+
+  <!-- 9 · EL REPORTE -->
+  <section class="slide">
+    <div class="eyebrow">La lista de llamadas del mes</div>
+    <div class="rule"></div>
+    <table>
+      <thead><tr><th>Placa</th><th>Tipo</th><th>Vencimiento</th><th>Días</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td class="v">ABC123</td><td>Tecnomecánica</td><td class="v">2026-10-12</td>
+            <td class="v crit">−3</td><td class="crit">Vencida</td></tr>
+        <tr><td class="v">ABC123</td><td>SOAT</td><td class="v">2026-10-20</td>
+            <td class="v warn">5</td><td class="warn">Por vencer</td></tr>
+        <tr><td class="v">ABC123</td><td>Licencia de conducción</td><td class="v">2026-11-09</td>
+            <td class="v warn">25</td><td class="warn">Por vencer</td></tr>
+      </tbody>
+    </table>
+    <div class="grid g2" style="margin-top:30px">
+      <div class="card"><div class="icon">✓</div><h3>Lo que sí lleva</h3>
+        <p>Placa, tipo, fecha, días restantes y estado. Más nada.</p></div>
+      <div class="card"><div class="icon">✕</div><h3>Lo que <em>no</em> lleva</h3>
+        <p>Ni nombre, ni teléfono, ni correo del dueño. Eso es minimización, no una promesa.</p></div>
+    </div>
+  </section>
+
+  <!-- 10 · LEY 1581 -->
+  <section class="slide">
+    <div class="eyebrow">Habeas data (Ley 1581 de 2012)</div>
+    <div class="rule"></div>
+    <h2 style="font-size:36px;max-width:30ch">Compartir datos con una aseguradora es
+      <span class="hl">transmisión de datos personales.</span></h2>
+    <div class="grid g3" style="margin-top:34px">
+      <div class="kpi brand"><div class="label">Opt-in por empresa</div>
+        <div class="value" style="font-size:26px">Sí o no</div>
+        <div class="sub">sin autorización no se encola nada</div></div>
+      <div class="kpi brand"><div class="label">Quién autorizó</div>
+        <div class="value" style="font-size:26px">Usuario + fecha</div>
+        <div class="sub">no un booleano anónimo</div></div>
+      <div class="kpi brand"><div class="label">Versión del texto</div>
+        <div class="value" style="font-size:26px">v1.0</div>
+        <div class="sub">si el texto cambia, se vuelve a pedir</div></div>
+    </div>
+    <p style="margin-top:30px">El registro de envíos es también <strong>la prueba de que se avisó</strong>:
+      sirve como evidencia ante un reclamo.</p>
+  </section>
+
+  <!-- 11 · EL PILOTO (CTA) -->
+  <section class="slide">
+    <div class="eyebrow">La propuesta</div>
+    <div class="rule"></div>
+    <div class="grid g4">
+      <div class="kpi brand"><div class="label">Paso 1</div>
+        <div class="value" data-count="20">0</div><div class="sub">placas de una flota suya</div></div>
+      <div class="kpi brand"><div class="label">Paso 2</div>
+        <div class="value" data-count="48">0</div><div class="sub">horas para devolver el dato</div></div>
+      <div class="kpi brand"><div class="label">Paso 3</div>
+        <div class="value" data-count="30">0</div><div class="sub">días de piloto, sin costo</div></div>
+      <div class="kpi good"><div class="label">Decidimos con</div>
+        <div class="value" style="font-size:24px">2 métricas</div>
+        <div class="sub">documentos vencidos · siniestros</div></div>
+    </div>
+    <p style="margin-top:34px;font-size:21px">
+      Le devuelvo <strong>cuántos documentos vencen en los próximos 30 días</strong> y
+      <strong>cuántos ya están vencidos</strong>. Si el número no la incomoda, seguimos;
+      si no mejora, no seguimos.</p>
+    <div class="foot"><span>SIN LICENCIA · SIN CAMBIAR NADA DE SU OPERACIÓN</span><span>20 placas · 48 h</span></div>
+  </section>
+
+  <!-- 12 · CIERRE -->
+  <section class="slide center">
+    <div class="eyebrow">Para cerrar</div>
+    <div class="big-quote" style="margin-top:18px">
+      No le estoy pidiendo que cambie nada.<br>
+      <span class="hl">Le estoy pidiendo 20 placas y 48 horas.</span>
+    </div>
+    <div class="rule"></div>
+    <p style="font-family:var(--mono);font-size:15px;color:var(--inverse-primary)">
+      SureTripCar · TRADEL S.A.S. / ZOLUTIO TECH
+    </p>
+    <div class="foot"><span>GRACIAS</span><span>15 · 10 · 2026</span></div>
+  </section>
+
+  <div class="progress"><i id="bar"></i></div>
+</div></div>
+<div class="hint">← → · espacio · clic</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')), i=0,
+      bar=document.getElementById('bar'), deck=document.getElementById('deck');
+
+  function fit(){
+    var s=Math.min(window.innerWidth/1280, window.innerHeight/720);
+    deck.style.transform='scale('+s+')';
+  }
+  window.addEventListener('resize',fit); fit();
+
+  function counts(el){
+    var end=parseFloat(el.dataset.count), t0=null, dur=900;
+    function frame(ts){
+      if(!t0) t0=ts;
+      var p=Math.min((ts-t0)/dur,1), v=Math.round(end*(1-Math.pow(1-p,3)));
+      el.textContent=(el.dataset.prefix||'')+v.toLocaleString('es-CO')+(el.dataset.suffix||'');
+      if(p<1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){ s.classList.toggle('active',k===i); });
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    [].forEach.call(slides[i].querySelectorAll('[data-count]'), counts);
+    if(location.hash!=='#/'+i) history.replaceState(null,'','#/'+i);
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].indexOf(e.key)>=0){e.preventDefault();go(i+1);}
+    if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>=0){e.preventDefault();go(i-1);}
+    if(e.key==='Home')go(0); if(e.key==='End')go(slides.length-1);
+  });
+  document.addEventListener('click',function(e){
+    if(e.target.closest('a,button'))return;
+    go(e.clientX < window.innerWidth*0.25 ? i-1 : i+1);
+  });
+  var start=location.hash.match(/#\/(\d+)/); go(start?+start[1]:0);
+})();
+</script>
+</body>
+</html>
