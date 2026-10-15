@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>SureTripCar · Propuesta para SURA</title>
+<title>SureTripCar · Acompañamiento Satelital</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 /* ==========================================================================
@@ -19,7 +19,7 @@
   --info:#4e86f5; --inverse-primary:#b5c4ff;
   --canvas:#f8f9ff; --card:#fff; --soft:#f7f9ff;
   --low:#eff4ff; --mid:#e5eeff; --high:#dce9ff; --highest:#d3e4fe;
-  --chrome:#0d1f3c; --chrome-elevated:#16294d; --inverse-canvas:#0b1c30;
+  --chrome:#0d1f3c; --chrome-elevated:#16294d;
   --on-dark:#eaf1ff; --on-dark-soft:#8fa3bf;
   --ink:#0b1c30; --body:#434654; --muted:#64748b; --muted-soft:#9aa4b2;
   --hairline:#e6e6e6; --hairline-strong:#d1d5db; --hairline-blue:#c3c5d7;
@@ -47,8 +47,8 @@ body{font-family:var(--ui);color:var(--on-dark);-webkit-font-smoothing:antialias
 .slide.active{display:flex;animation:in .45s var(--ease)}
 @keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .slide.center{justify-content:center}
+.slide.tight{padding:52px 72px}
 
-/* Tipografía */
 .eyebrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;
   text-transform:uppercase;color:var(--info)}
 h1{font-size:64px;line-height:1.05;font-weight:700;letter-spacing:-.02em}
@@ -59,13 +59,13 @@ strong{color:var(--on-dark);font-weight:700}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--on-dark)}
 .rule{width:64px;height:3px;background:var(--primary);border-radius:2px;margin:20px 0 26px}
 
-/* Chips y cards */
 .chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
   font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 12px;border-radius:6px}
 .chip .dot{width:6px;height:6px;border-radius:50%}
 .chip.ok{background:rgba(34,197,94,.20);color:#7fe0aa}.chip.ok .dot{background:var(--success)}
 .chip.warn{background:rgba(245,158,11,.20);color:#ffd08a}.chip.warn .dot{background:var(--warning)}
 .chip.bad{background:rgba(239,68,68,.20);color:#ff9aa5}.chip.bad .dot{background:var(--critical)}
+.chip.brand{background:rgba(28,105,212,.22);color:var(--inverse-primary)}.chip.brand .dot{background:var(--primary)}
 
 .grid{display:grid;gap:20px}
 .g2{grid-template-columns:1fr 1fr}
@@ -91,8 +91,10 @@ strong{color:var(--on-dark);font-weight:700}
   text-transform:uppercase;color:var(--primary)}
 .icon{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;margin-bottom:14px;
   background:rgba(28,105,212,.12);color:var(--primary);font-family:var(--mono);font-weight:700}
+.card.dark{background:rgba(255,255,255,.05);border-color:rgba(234,241,255,.14)}
+.card.dark h3{color:var(--on-dark)}
+.card.dark p{color:var(--on-dark-soft)}
 
-/* Tabla (misma spec que el CRM) */
 table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden}
 thead th{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;
   text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 24px;background:var(--canvas);
@@ -103,31 +105,38 @@ td.v{font-family:var(--mono);font-variant-numeric:tabular-nums}
 td.crit{color:var(--critical);font-weight:700}
 td.warn{color:#b45309;font-weight:700}
 td.good{color:#15803d;font-weight:700}
-.mini{font-family:var(--mono);font-size:11px;color:var(--muted)}
 
-/* Marco para capturas */
 .shot{border-radius:10px;overflow:hidden;border:1px solid rgba(234,241,255,.16);
   box-shadow:var(--shadow-overlay);background:#0a1830}
 .shot img{display:block;width:100%;height:auto}
-.shot.hero img{max-height:430px;width:auto;margin:0 auto}
+.shot.hero img{max-height:400px;width:auto;margin:0 auto}
 .caption{font-family:var(--mono);font-size:12px;color:var(--on-dark-soft);margin-top:14px;
-  display:flex;gap:10px;align-items:center}
-.phone{width:238px;border-radius:26px;overflow:hidden;border:1px solid rgba(234,241,255,.22);
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.phone{width:232px;border-radius:26px;overflow:hidden;border:1px solid rgba(234,241,255,.22);
   box-shadow:var(--shadow-overlay);background:#0a1830;flex:0 0 auto}
 .phone img{display:block;width:100%;height:auto}
-.two{display:grid;grid-template-columns:238px 1fr;gap:44px;align-items:center}
+.two{display:grid;grid-template-columns:232px 1fr;gap:44px;align-items:center}
 
-/* Diagrama de coalescencia */
+/* Diagramas */
+.flow{display:flex;align-items:center;gap:18px;margin-top:8px}
+.node{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(234,241,255,.14);
+  border-radius:8px;padding:16px 18px;text-align:center}
+.node .n{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--on-dark-soft)}
+.node .t{font-size:15px;font-weight:600;margin-top:6px}
+.node.hi{border-color:rgba(28,105,212,.55);background:rgba(28,105,212,.14)}
+.plus{font-family:var(--mono);color:var(--info);font-size:20px}
+
 .waves{display:flex;align-items:flex-end;gap:14px;margin-top:8px}
 .wave{flex:1;text-align:center}
-.bar{height:8px;border-radius:4px;background:rgba(143,163,191,.28);margin-bottom:10px}
+.wave .bar{height:8px;border-radius:4px;background:rgba(143,163,191,.28);margin-bottom:10px}
 .wave.dead .bar{background:rgba(143,163,191,.16)}
-.wave.alive .bar{background:var(--primary);height:8px;box-shadow:0 0 0 3px rgba(28,105,212,.18)}
+.wave.alive .bar{background:var(--primary);box-shadow:0 0 0 3px rgba(28,105,212,.18)}
 .wave .lbl{font-family:var(--mono);font-size:12px;color:var(--on-dark-soft)}
 .wave.alive .lbl{color:var(--inverse-primary);font-weight:700}
-.arrow{display:flex;align-items:center;gap:14px;margin-top:22px}
-.arrow .line{flex:1;height:1px;background:rgba(143,163,191,.3)}
-.arrow .box{background:rgba(28,105,212,.14);border:1px solid rgba(28,105,212,.4);
+.arrowline{display:flex;align-items:center;gap:14px;margin-top:22px}
+.arrowline .line{flex:1;height:1px;background:rgba(143,163,191,.3)}
+.arrowline .box{background:rgba(28,105,212,.14);border:1px solid rgba(28,105,212,.4);
   border-radius:8px;padding:12px 18px;font-family:var(--mono);font-size:13px;color:var(--inverse-primary)}
 
 .foot{position:absolute;left:80px;right:80px;bottom:26px;display:flex;align-items:center;
@@ -136,12 +145,10 @@ td.good{color:#15803d;font-weight:700}
 .progress i{display:block;height:100%;width:0;background:var(--primary);transition:width .35s var(--ease)}
 .hint{position:fixed;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;
   color:rgba(143,163,191,.55)}
-.muted{color:var(--on-dark-soft)}
 .tiny{font-size:13px;color:var(--on-dark-soft)}
 .big-quote{font-size:40px;line-height:1.25;font-weight:700;max-width:26ch;letter-spacing:-.01em}
 .hl{color:var(--inverse-primary)}
 
-/* Impresión: una página por slide, apaisado, para mandar el PDF por correo. */
 @media print{
   @page{size:1280px 720px;margin:0}
   html,body{overflow:visible;background:#fff}
@@ -158,119 +165,144 @@ td.good{color:#15803d;font-weight:700}
 
   <!-- 1 · PORTADA -->
   <section class="slide center">
-    <div class="eyebrow">Propuesta para SURA · Seguros de flotas</div>
+    <div class="eyebrow">Propuesta para el Servicio de Acompañamiento Satelital</div>
     <h1 style="margin-top:18px">SureTripCar</h1>
     <p style="margin-top:14px;font-size:22px;color:var(--inverse-primary)">
-      Seguridad en cada kilómetro.
+      Lo que su plataforma todavía no ve.
     </p>
     <div class="rule"></div>
-    <p>La plataforma que ya opera en cabina: <strong>fatiga del conductor</strong> y
-      <strong>documentos que vencen</strong>, en el mismo lugar donde se toman las decisiones.</p>
-    <div class="foot"><span>TRADEL S.A.S. · ZOLUTIO TECH</span><span>15 · 10 · 2026</span></div>
+    <p>Se integra a lo que ustedes ya venden: <strong>sin hardware nuevo</strong>, bajo su marca,
+      y en el mismo vehículo que ya monitorean.</p>
+    <div class="foot"><span>TRADEL S.A.S. · ZOLUTIO TECH</span><span>2026</span></div>
   </section>
 
-  <!-- 2 · GANCHO -->
+  <!-- 2 · EL GANCHO -->
   <section class="slide center">
-    <div class="eyebrow">La pregunta incómoda</div>
+    <div class="eyebrow">La pregunta</div>
     <h2 style="margin-top:18px;max-width:30ch">
-      ¿Cuántos de los vehículos que SURA asegura hoy van a circular
-      <span class="hl">mañana con el SOAT o la tecnomecánica vencidos</span>?
+      Su plataforma sabe <span class="hl">dónde está</span> cada vehículo.
+      ¿Sabe si el conductor <span class="hl">se durmió a las 3 de la mañana</span>?
     </h2>
     <div class="rule"></div>
-    <div class="big-quote">Si no lo sabe, <span class="hl">ese siniestro ya está vendido.</span></div>
+    <p>Y sabe a qué velocidad va. No sabe si <strong>el SOAT de ese camión vence en cinco días</strong>.
+      Son los dos únicos puntos ciegos que le quedan a un servicio de monitoreo — y son los dos que
+      terminan en un siniestro.</p>
   </section>
 
-  <!-- 3 · EL COSTO -->
+  <!-- 3 · EL PUNTO CIEGO -->
   <section class="slide">
-    <div class="eyebrow">El costo de circular sin tecnomecánica</div>
+    <div class="eyebrow">Los dos puntos ciegos</div>
+    <div class="rule"></div>
+    <div class="grid g2">
+      <div class="card dark"><div class="icon">01</div>
+        <h3>La cara del conductor</h3>
+        <p>El GPS ve el vehículo. La fatiga, la distracción y el microsueño ocurren <strong>dentro
+          de la cabina</strong>, y ahí no llega ningún sensor de la plataforma. Se detecta mirando
+          al conductor, en el celular que ya lleva encima.</p></div>
+      <div class="card dark"><div class="icon">02</div>
+        <h3>El documento que vence</h3>
+        <p>SOAT, tecnomecánica y licencia. Hoy nadie los vigila hasta que vencen: la multa son
+          15 salarios mínimos, con <strong>inmovilización y bloqueo en el RUNT</strong>.
+          La flota se detiene y el reclamo les llega a ustedes.</p></div>
+    </div>
+    <p style="margin-top:30px">Ninguno de los dos se arregla con más hardware.
+      Se arregla <strong>agregando una capa de software</strong> a lo que ya está instalado.</p>
+  </section>
+
+  <!-- 4 · LO QUE CUESTA HOY -->
+  <section class="slide">
+    <div class="eyebrow">Lo que cuesta hoy ese punto ciego</div>
     <div class="rule"></div>
     <div class="grid g4">
-      <div class="kpi crit"><div class="label">Multa C35</div>
+      <div class="kpi crit"><div class="label">Multa RTM</div>
         <div class="value" data-count="875452" data-prefix="$" data-sep=".">0</div>
-        <div class="sub">15 salarios mínimos diarios</div></div>
+        <div class="sub">15 salarios mínimos · C35</div></div>
       <div class="kpi crit"><div class="label">Inmovilización</div>
         <div class="value">Inmediata</div><div class="sub">más grúa y patios</div></div>
-      <div class="kpi crit"><div class="label">RUNT</div>
-        <div class="value">Bloqueado</div><div class="sub">sin traspasos ni trámites</div></div>
       <div class="kpi warn"><div class="label">SOAT vencido</div>
-        <div class="value">Sin cobertura</div><div class="sub">el siniestro se pelea</div></div>
+        <div class="value">Sin cobertura</div><div class="sub">el recobro se pelea</div></div>
+      <div class="kpi warn"><div class="label">Fatiga no vista</div>
+        <div class="value">Siniestro</div><div class="sub">el que nadie pudo anticipar</div></div>
     </div>
-    <p style="margin-top:34px">La flota se detiene, el cliente se enoja y el reclamo llega
-      <strong>después</strong> de que el vehículo ya salió a la vía.</p>
+    <p style="margin-top:34px">Un solo siniestro de estos paga <strong>años</strong> de plataforma en
+      toda la flota del cliente.</p>
   </section>
 
-  <!-- 4 · EL SEGUNDO COSTO -->
-  <section class="slide center">
-    <div class="eyebrow">El segundo costo: comercial</div>
-    <div class="big-quote" style="margin-top:18px">
-      El día que a su cliente se le vence el SOAT es <span class="hl">el único día del año en que
-      ese cliente va a atenderles el teléfono.</span>
-    </div>
-    <div class="rule"></div>
-    <p>Fuera de ese día, SURA no tiene un motivo para llamar. Y el que llama con el dato
-      —<em>“a tu flota le vencen 12 SOAT este mes”</em>— no es el que vende GPS:
-      es el que ya tiene la relación.</p>
-  </section>
-
-  <!-- 5 · LA SOLUCIÓN -->
+  <!-- 5 · LA PROPUESTA -->
   <section class="slide">
-    <div class="eyebrow">La solución</div>
+    <div class="eyebrow">La propuesta, en una línea</div>
+    <div class="rule"></div>
+    <h2 style="font-size:38px;max-width:32ch">No competimos con su plataforma.
+      <span class="hl">La completamos.</span></h2>
+    <div class="grid g3" style="margin-top:34px">
+      <div class="card"><div class="icon">+</div><h3>Sin hardware</h3>
+        <p>No instalamos nada. La posición la seguimos leyendo de <strong>su plataforma</strong>.</p></div>
+      <div class="card"><div class="icon">+</div><h3>Bajo su marca</h3>
+        <p>Es una capa blanca: su cliente ve el servicio de ustedes, mejorado.</p></div>
+      <div class="card"><div class="icon">+</div><h3>En semanas</h3>
+        <p>Integración por API o por archivo. El conductor solo baja una app.</p></div>
+    </div>
+    <div class="foot"><span>NO ES OTRO PROVEEDOR: ES UNA CAPA SOBRE EL SUYO</span><span>0 hardware nuevo</span></div>
+  </section>
+
+  <!-- 6 · QUÉ AGREGA -->
+  <section class="slide">
+    <div class="eyebrow">Qué agrega, concretamente</div>
     <div class="rule"></div>
     <div class="grid g3">
-      <div class="card"><div class="icon">01</div>
-        <h3>App del conductor</h3>
-        <p>Fatiga y distracción, en el celular de la cabina. Funciona sin internet y sin GPS.</p></div>
-      <div class="card"><div class="icon">02</div>
-        <h3>CRM de la flota</h3>
-        <p>El despachador ve quién está en riesgo y qué documento vence: rojo y ámbar, sin buscar.</p></div>
-      <div class="card"><div class="icon">03</div>
-        <h3>Vigencias</h3>
-        <p>La fecha del documento vigilada y avisada a tiempo, al dueño, al conductor y a SURA.</p></div>
+      <div class="card dark"><div class="icon">01</div><h3>Fatiga y distracción</h3>
+        <p>Al volante, en tiempo real, con alerta al conductor y evento al centro de monitoreo.</p></div>
+      <div class="card dark"><div class="icon">02</div><h3>Documentos vigilados</h3>
+        <p>SOAT, tecnomecánica y licencia, con aviso escalonado antes del vencimiento.</p></div>
+      <div class="card dark"><div class="icon">03</div><h3>El conductor en la app</h3>
+        <p>Ve sus documentos y su fatiga. Es el canal que no depende de que abra un correo.</p></div>
     </div>
-    <p style="margin-top:30px">Todo multiempresa: cada flota ve lo suyo y nada más.</p>
+    <p style="margin-top:30px" class="tiny">Todo multiempresa: cada flota ve lo suyo y nada más.
+      Sirve igual para sus clientes de transporte que para su propia operación de servicio.</p>
   </section>
 
-  <!-- 6 · EL PRODUCTO (CRM real) -->
-  <section class="slide">
-    <div class="eyebrow">El producto, funcionando hoy</div>
-    <div class="rule"></div>
-    <div class="shot hero"><img src="img/crm-vigencias.png" alt="CRM de flota: vigencias"></div>
+  <!-- 7 · EL PRODUCTO -->
+  <section class="slide tight">
+    <div class="eyebrow">Así lo vería su operación</div>
+    <div class="rule" style="margin:14px 0 16px"></div>
+    <div class="shot hero"><img src="img/crm-vigencias.png" alt="Consola de flota: documentos por vencer"></div>
     <div class="caption"><span class="chip bad"><span class="dot"></span>Vencida</span>
       <span class="chip warn"><span class="dot"></span>Por vencer</span>
-      <span>Datos reales del entorno de demostración · 3 documentos · 1 multa evitada</span></div>
+      <span>Datos reales del entorno de demostración · la tecnomecánica vencida hace 3 días, el SOAT a 5</span></div>
   </section>
 
-  <!-- 7 · EN EL BOLSILLO DEL CONDUCTOR -->
+  <!-- 8 · EL CONDUCTOR -->
   <section class="slide">
     <div class="eyebrow">El canal que no depende del correo</div>
     <div class="rule"></div>
     <div class="two">
       <div class="phone"><img src="img/celular-documentos.png" alt="App del conductor: mis documentos"></div>
       <div>
-        <h2 style="font-size:34px;max-width:22ch">El conductor ve su documento
+        <h2 style="font-size:32px;max-width:22ch">El conductor ve su documento
           <span class="hl">todos los días, no cuando vence.</span></h2>
-        <p style="margin-top:20px">Cuenta regresiva en el celular y <strong>aviso local a las 7:00</strong>
+        <p style="margin-top:18px">Cuenta regresiva en el celular y <strong>aviso local a las 7:00</strong>,
           una semana antes y el día del vencimiento. Una sola vez por documento: no es un sistema que
           molesta, es uno al que le creen.</p>
-        <p style="margin-top:16px" class="tiny">Hoy es el canal garantizado, porque no depende de que el
-          conductor abra un correo. El envío al dueño y a SURA corre por el servidor.</p>
+        <p style="margin-top:14px" class="tiny">Y es el mismo celular con el que ya reporta: no hay
+          que sumar dispositivos a la flota.</p>
       </div>
     </div>
   </section>
 
-  <!-- 8 · PRIVACIDAD -->
+  <!-- 9 · PRIVACIDAD -->
   <section class="slide center">
-    <div class="eyebrow">Lo que nos hace defendibles</div>
+    <div class="eyebrow">Lo que sus clientes van a preguntar</div>
     <h2 style="margin-top:18px">
       El video <span class="hl">nunca sale del teléfono.</span>
     </h2>
     <div class="rule"></div>
     <p>El reconocimiento corre <strong>en el dispositivo</strong>: la cámara se analiza localmente y
       lo único que sube es el estado —normal, somnoliento— con la posición.
-      No hay nube con caras de sus asegurados, y no hay nada que se pueda filtrar.</p>
+      No hay nube con caras de conductores. Es la primera objeción de cualquier flota y la tenemos
+      resuelta por diseño, no por contrato.</p>
   </section>
 
-  <!-- 7 · EL PRINCIPIO -->
+  <!-- 10 · EL PRINCIPIO -->
   <section class="slide center">
     <div class="eyebrow">El principio que nos protege a los dos</div>
     <h1 style="margin-top:16px;max-width:26ch">
@@ -278,16 +310,16 @@ td.good{color:#15803d;font-weight:700}
     </h1>
     <div class="rule"></div>
     <p>La fecha de vencimiento es <strong>la del documento</strong> —la póliza, el CDR, la licencia—
-      o la que devuelva RUNT. El sistema la guarda y avisa; nunca la deriva de una regla.
-      Ustedes no quedan expuestos a que un sistema les diga cuándo vence una norma.</p>
+      o la que devuelva RUNT. El sistema la guarda y avisa; <strong>nunca la deriva de una regla</strong>.
+      Ni ustedes ni su cliente quedan expuestos a que un sistema les diga cuándo vence una norma.</p>
   </section>
 
-  <!-- 8 · CÓMO FUNCIONA -->
+  <!-- 11 · CÓMO FUNCIONA -->
   <section class="slide">
     <div class="eyebrow">Cómo funciona</div>
     <div class="rule"></div>
-    <h3 style="font-size:24px">Cargamos un SOAT que vence en 5 días. Seis umbrales ya pasaron.</h3>
-    <div class="waves" style="margin-top:26px">
+    <h3 style="font-size:23px">Cargamos un SOAT que vence en 5 días. Seis umbrales ya pasaron.</h3>
+    <div class="waves" style="margin-top:24px">
       <div class="wave dead"><div class="bar"></div><div class="lbl">30d</div></div>
       <div class="wave dead"><div class="bar"></div><div class="lbl">15d</div></div>
       <div class="wave dead"><div class="bar"></div><div class="lbl">7d</div></div>
@@ -295,99 +327,97 @@ td.good{color:#15803d;font-weight:700}
       <div class="wave alive"><div class="bar"></div><div class="lbl">1d</div></div>
       <div class="wave dead"><div class="bar"></div><div class="lbl">0d</div></div>
     </div>
-    <div class="arrow">
-      <div class="line"></div>
-      <div class="box">1 mensaje · no 6</div>
-      <div class="line"></div>
+    <div class="arrowline">
+      <div class="line"></div><div class="box">1 mensaje · no 6</div><div class="line"></div>
     </div>
-    <div class="grid g3" style="margin-top:26px">
-      <div class="card"><span class="tag">Al dueño</span><p>Por WhatsApp o correo, con la fecha exacta.</p></div>
-      <div class="card"><span class="tag">Al conductor</span><p>En la app, con cuenta regresiva y aviso local.</p></div>
-      <div class="card"><span class="tag">A SURA</span><p>Sólo si la empresa autorizó (Ley 1581).</p></div>
+    <div class="grid g3" style="margin-top:24px">
+      <div class="card"><span class="tag">Al dueño</span><p>WhatsApp o correo, con la fecha exacta.</p></div>
+      <div class="card"><span class="tag">Al conductor</span><p>En la app, con cuenta regresiva.</p></div>
+      <div class="card"><span class="tag">A su central</span><p>El evento entra a su operación, como cualquier otra alerta.</p></div>
     </div>
-    <p class="tiny" style="margin-top:22px">Y queda el rastro: si alguien corrige la fecha, los
-      avisos anteriores se <strong>cancelan</strong> — no se borran.</p>
-    <div class="foot"><span>SCAN DIARIO · IDEMPOTENTE</span><span>correrlo dos veces no duplica nada</span></div>
+    <p class="tiny" style="margin-top:20px">Y queda el rastro: si alguien corrige la fecha, los
+      avisos anteriores se <strong>cancelan, no se borran</strong>.</p>
   </section>
 
-  <!-- 9 · EL REPORTE -->
+  <!-- 12 · LA INTEGRACIÓN -->
   <section class="slide">
-    <div class="eyebrow">La lista de llamadas del mes</div>
+    <div class="eyebrow">La integración, sin humo</div>
     <div class="rule"></div>
-    <table>
-      <thead><tr><th>Placa</th><th>Tipo</th><th>Vencimiento</th><th>Días</th><th>Estado</th></tr></thead>
-      <tbody>
-        <tr><td class="v">ABC123</td><td>Tecnomecánica</td><td class="v">2026-10-12</td>
-            <td class="v crit">−3</td><td class="crit">Vencida</td></tr>
-        <tr><td class="v">ABC123</td><td>SOAT</td><td class="v">2026-10-20</td>
-            <td class="v warn">5</td><td class="warn">Por vencer</td></tr>
-        <tr><td class="v">ABC123</td><td>Licencia de conducción</td><td class="v">2026-11-09</td>
-            <td class="v warn">25</td><td class="warn">Por vencer</td></tr>
-      </tbody>
-    </table>
-    <div class="grid g2" style="margin-top:30px">
-      <div class="card"><div class="icon">✓</div><h3>Lo que sí lleva</h3>
-        <p>Placa, tipo, fecha, días restantes y estado. Más nada.</p></div>
-      <div class="card"><div class="icon">✕</div><h3>Lo que <em>no</em> lleva</h3>
-        <p>Ni nombre, ni teléfono, ni correo del dueño. Eso es minimización, no una promesa.</p></div>
+    <div class="flow">
+      <div class="node"><div class="n">Su plataforma</div><div class="t">Posición y estado</div>
+        <div class="tiny" style="margin-top:6px">lo que ya tienen</div></div>
+      <div class="plus">+</div>
+      <div class="node hi"><div class="n">SureTripCar</div><div class="t">Fatiga + vigencias</div>
+        <div class="tiny" style="margin-top:6px">la capa que agregamos</div></div>
+      <div class="plus">=</div>
+      <div class="node"><div class="n">Su cliente</div><div class="t">Un servicio completo</div>
+        <div class="tiny" style="margin-top:6px">bajo su marca</div></div>
     </div>
-  </section>
-
-  <!-- 10 · LEY 1581 -->
-  <section class="slide">
-    <div class="eyebrow">Habeas data (Ley 1581 de 2012)</div>
-    <div class="rule"></div>
-    <h2 style="font-size:36px;max-width:30ch">Compartir datos con una aseguradora es
-      <span class="hl">transmisión de datos personales.</span></h2>
     <div class="grid g3" style="margin-top:34px">
-      <div class="kpi brand"><div class="label">Opt-in por empresa</div>
-        <div class="value" style="font-size:26px">Sí o no</div>
-        <div class="sub">sin autorización no se encola nada</div></div>
-      <div class="kpi brand"><div class="label">Quién autorizó</div>
-        <div class="value" style="font-size:26px">Usuario + fecha</div>
-        <div class="sub">no un booleano anónimo</div></div>
-      <div class="kpi brand"><div class="label">Versión del texto</div>
-        <div class="value" style="font-size:26px">v1.0</div>
-        <div class="sub">si el texto cambia, se vuelve a pedir</div></div>
+      <div class="card"><span class="tag">Entrada</span><p>Leemos posición por <strong>API</strong> o
+        por archivo. No pedimos acceso a su base.</p></div>
+      <div class="card"><span class="tag">Salida</span><p>Los eventos entran a su central y el
+        reporte de vencimientos sale en <strong>CSV</strong>.</p></div>
+      <div class="card"><span class="tag">Plazo</span><p><strong>~2 semanas</strong> de integración.
+        El piloto no depende de eso: arranca con la app sola.</p></div>
     </div>
-    <p style="margin-top:30px">El registro de envíos es también <strong>la prueba de que se avisó</strong>:
-      sirve como evidencia ante un reclamo.</p>
+    <p class="tiny" style="margin-top:24px">Hoy el reporte es un archivo descargable; el envío
+      automático por correo o webhook es la segunda iteración, con ustedes sentados.</p>
   </section>
 
-  <!-- 11 · EL PILOTO (CTA) -->
+  <!-- 13 · LO QUE GANAN -->
+  <section class="slide">
+    <div class="eyebrow">Lo que gana su servicio</div>
+    <div class="rule"></div>
+    <div class="grid g3">
+      <div class="kpi good"><div class="label">Retención</div>
+        <div class="value" style="font-size:26px">Menos churn</div>
+        <div class="sub">deja de ser "el GPS": pasa a ser la seguridad de la operación</div></div>
+      <div class="kpi brand"><div class="label">Venta</div>
+        <div class="value" style="font-size:26px">Plan premium</div>
+        <div class="sub">un atributo más para cobrar por vehículo, sin hardware</div></div>
+      <div class="kpi brand"><div class="label">Conversación</div>
+        <div class="value" style="font-size:26px">12 al año</div>
+        <div class="sub">cada vencimiento es un motivo de contacto del ejecutivo</div></div>
+    </div>
+    <p style="margin-top:32px">Y el costo que evitan es el que hoy les llega igual: el siniestro
+      <strong>de un vehículo que estaban monitoreando</strong> y no vieron venir.</p>
+  </section>
+
+  <!-- 14 · EL PILOTO -->
   <section class="slide">
     <div class="eyebrow">La propuesta</div>
     <div class="rule"></div>
     <div class="grid g4">
       <div class="kpi brand"><div class="label">Paso 1</div>
-        <div class="value" data-count="20">0</div><div class="sub">placas de una flota suya</div></div>
+        <div class="value" data-count="20">0</div><div class="sub">vehículos de un cliente suyo</div></div>
       <div class="kpi brand"><div class="label">Paso 2</div>
-        <div class="value" data-count="48">0</div><div class="sub">horas para devolver el dato</div></div>
-      <div class="kpi brand"><div class="label">Paso 3</div>
         <div class="value" data-count="30">0</div><div class="sub">días de piloto, sin costo</div></div>
-      <div class="kpi good"><div class="label">Decidimos con</div>
-        <div class="value" style="font-size:24px">2 métricas</div>
-        <div class="sub">documentos vencidos · siniestros</div></div>
+      <div class="kpi good"><div class="label">Métrica 1</div>
+        <div class="value" style="font-size:24px">Siniestros</div>
+        <div class="sub">y eventos de fatiga detectados</div></div>
+      <div class="kpi good"><div class="label">Métrica 2</div>
+        <div class="value" style="font-size:24px">Vencimientos</div>
+        <div class="sub">documentos vencidos al renovar</div></div>
     </div>
-    <p style="margin-top:34px;font-size:21px">
-      Le devuelvo <strong>cuántos documentos vencen en los próximos 30 días</strong> y
-      <strong>cuántos ya están vencidos</strong>. Si el número no la incomoda, seguimos;
-      si no mejora, no seguimos.</p>
-    <div class="foot"><span>SIN LICENCIA · SIN CAMBIAR NADA DE SU OPERACIÓN</span><span>20 placas · 48 h</span></div>
+    <p style="margin-top:32px;font-size:21px">Elegimos juntos <strong>un cliente de su cartera</strong>,
+      montamos la app y ustedes ven los eventos en su central. Si las dos métricas no mejoran, no seguimos.
+      Y si mejoran, ya tienen el argumento para venderlo a toda la flota.</p>
+    <div class="foot"><span>SIN COSTO · SIN HARDWARE · SIN SACARLES AL CLIENTE</span><span>20 vehículos · 30 días</span></div>
   </section>
 
-  <!-- 12 · CIERRE -->
+  <!-- 15 · CIERRE -->
   <section class="slide center">
     <div class="eyebrow">Para cerrar</div>
     <div class="big-quote" style="margin-top:18px">
-      No le estoy pidiendo que cambie nada.<br>
-      <span class="hl">Le estoy pidiendo 20 placas y 48 horas.</span>
+      No les propongo cambiar su servicio.<br>
+      <span class="hl">Les propongo que su servicio vea lo que hoy no ve.</span>
     </div>
     <div class="rule"></div>
     <p style="font-family:var(--mono);font-size:15px;color:var(--inverse-primary)">
       SureTripCar · TRADEL S.A.S. / ZOLUTIO TECH
     </p>
-    <div class="foot"><span>GRACIAS</span><span>15 · 10 · 2026</span></div>
+    <div class="foot"><span>GRACIAS</span><span>20 vehículos · 30 días</span></div>
   </section>
 
   <div class="progress"><i id="bar"></i></div>
